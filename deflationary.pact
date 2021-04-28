@@ -4,11 +4,11 @@
 
 (module deflationary GOVERNANCE
 
-  @doc " 'First deflationary token model on Kadena. Made by Thanos' 10% burn "
+  @doc " 'First deflationary token model on Kadena. Made by Thanos' 5% burn "
 
   @model
     [ (defproperty conserves-mass
-        (= (column-delta token-table 'balance) (- 0.0 (* 0.1 amount))))
+        (= (column-delta token-table 'balance) (- 0.0 (* TX_BURN amount))))
 
       (defproperty valid-account-id (accountId:string)
         (and
@@ -113,6 +113,9 @@
 
   (defconst ACCOUNT_ID_MAX_LENGTH 256
     " Maximum character length for account IDs. ")
+    
+  (defconst TX_BURN:decimal 0.05
+    " Percentage of every transaction burned ")
 
   ; --------------------------------------------------------------------------
   ; Utilities
@@ -242,7 +245,7 @@
       (enforce (= currentGuard guard) "Account guards do not match.")
 
       (write token-table accountId
-        { "balance" : (+ balance (* 0.9 amount))
+        { "balance" : (+ balance (* (- 1 TX_BURN) amount))
         , "guard"   : currentGuard
         }
       )
